@@ -2,10 +2,17 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const User = require('../models/user')
-const SALT_LENGTH = 12;
 const jwt = require('jsonwebtoken');
+const { sendError, Unauthorized } = require('../utils/errors')
 
+
+//!--- Model
+const User = require('../models/user')
+
+//!--- SALT length variable
+const SALT_LENGTH = 12;
+
+//!---Sign Up
 router.post('/signup', async (req, res) => {
     try {
         // Check if the username is already taken
@@ -28,6 +35,7 @@ router.post('/signup', async (req, res) => {
     }
 });
 
+//!--- Sign In
 router.post('/signin', async (req, res) => {
     try{
         const user = await User.findOne({ username: req.body.username });
@@ -41,7 +49,7 @@ router.post('/signin', async (req, res) => {
             res.status(401).json({ error: 'Invalid username or password.' });
         }
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        sendError(error, res)
     }
 })
 
